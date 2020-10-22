@@ -14,21 +14,57 @@ public class KochGenerator : MonoBehaviour
         Octagon = 8
     };
 
+    protected enum _axis
+    {
+        XAxis,
+        YAxis,
+        ZAxis
+    };
+
+    [SerializeField]
+    protected _axis axis = new _axis();
+
     [SerializeField]
     protected _initiator initiator = new _initiator();
     protected int _initiatorPointAmount;
     private Vector3[] _initiatorPoint;
     private Vector3 _rotateVector;
     private Vector3 _rotateAxis;
+    private float _initialRotation;
     [SerializeField]
     protected float _initiatorSize;
+
+    void InitializeAxes()
+    {
+        switch (axis)
+        {
+            case _axis.XAxis:
+                _rotateVector = new Vector3(1, 0, 0);
+                _rotateAxis = new Vector3(0, 0, 1);
+                break;
+            case _axis.YAxis:
+                _rotateVector = new Vector3(0, 1, 0);
+                _rotateAxis = new Vector3(1, 0, 0);
+                break;
+            case _axis.ZAxis:
+                _rotateVector = new Vector3(0, 0, 1);
+                _rotateAxis = new Vector3(0, 1, 0);
+                break;
+        };
+    }
+
+    void Awake()
+    {
+        //
+    }
 
     void OnDrawGizmos()
     {
         _initiatorPointAmount = (int)initiator;
+        _initialRotation = _initiatorPointAmount == 3 ? 0 : 360 / (_initiatorPointAmount * 2);
+        InitializeAxes();
         _initiatorPoint = new Vector3[_initiatorPointAmount];
-        _rotateVector = new Vector3(0, 0, 1);
-        _rotateAxis = new Vector3(0, 1, 0);
+        _rotateVector = Quaternion.AngleAxis(_initialRotation, _rotateAxis) * _rotateVector;
         for (int i = 0; i < _initiatorPointAmount; i++)
         {
             _initiatorPoint[i] = _rotateVector * _initiatorSize;
